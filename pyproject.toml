@@ -4,22 +4,28 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "motionguru-ai"
-version = "0.1.0"
-description = "Local-first video editing with human-approved smart cuts"
+version = "0.2.0"
+description = "Local-first AI video editing, motion graphics, captions, and sound design"
 requires-python = ">=3.10"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Chaituverse" }]
-dependencies = []
+dependencies = ["Pillow>=10.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+transcribe = ["faster-whisper>=1.1"]
+agents = ["mcp>=1.1"]
 
 [project.scripts]
 motionguru = "motionguru.cli:main"
+motionguru-mcp = "motionguru.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+motionguru = ["studio/*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

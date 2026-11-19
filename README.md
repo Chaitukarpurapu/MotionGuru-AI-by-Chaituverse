@@ -2,24 +2,47 @@
 
 **Create. Animate. Edit. With AI.**
 
-A local-first, open-source video editing and motion-graphics project. The first working milestone focuses on **reviewable, non-destructive silence cuts**. Motion graphics, premium captions, smart semantic cuts, SFX packs, and a visual studio are planned rather than claimed as shipped.
+[![Tests](https://github.com/Chaitukarpurapu/MotionGuru-AI-by-Chaituverse/actions/workflows/tests.yml/badge.svg)](https://github.com/Chaitukarpurapu/MotionGuru-AI-by-Chaituverse/actions)
 
-## Phase 1 — smart cuts
+A **local-first, open-source** video editing and motion-graphics toolkit with an assistant-neutral CLI, a Claude Code skill, and an optional local MCP server. Built by **Chaituverse**.
 
-Requirements: Python 3.10+ and FFmpeg (both `ffmpeg` and `ffprobe` on PATH). Works on Windows, macOS, and Linux.
+> **Status:** Early developer preview. The repo includes a working foundation for manual-approved silence cuts, basic 2D motion scenes, SRT/ASS captions, offline speech transcription (optional), synthesized SFX, audio mixing and a basic browser scene preview. This is **not yet** a professional After Effects/Premiere/FluxoCut replacement.
 
-### Windows quick start
+## What works today
+
+| Feature | Current capability |
+| --- | --- |
+| Smart cuts | FFmpeg silence detection; explicit cut/keep review; non-destructive MP4 export |
+| Motion graphics | Render JSON scenes with animated text, shapes, lines, charts and counters |
+| Captions | Convert SRT to 8 original ASS styles; optional word-level offline transcription; burn styles into MP4 |
+| SFX | Create 6 original synthesized effects: impact, whoosh, riser, pop, click, sweep |
+| Audio | Mix voice, music and SFX into MP4; adjustable volumes |
+| AI integration | Claude Code skill + optional local MCP server; no cloud key required for deterministic tools |
+| Scene Studio | Local browser preview and JSON editor at localhost, export editable JSON |
+| Tests | Windows and Ubuntu tests; actual FFmpeg video-editing and motion-graphics smoke tests |
+
+## Requirements
+
+- **Python 3.10+**, tested in CI on Python 3.12.
+- **FFmpeg and ffprobe** on your PATH for rendering/editing.
+- **Pillow** (installed automatically).
+- Optional `faster-whisper` and a local model download for transcription.
+- Optional `mcp` package for agent tools.
+
+### Install on Windows PowerShell
 
 ```powershell
 git clone https://github.com/Chaitukarpurapu/MotionGuru-AI-by-Chaituverse.git
 cd MotionGuru-AI-by-Chaituverse
+git checkout feat/phase1-smart-cuts
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
 ffmpeg -version
+motionguru --help
 ```
 
-### Analyze, review, render
+### 1. AI-assisted, human-approved cuts
 
 ```powershell
 motionguru analyze "input.mp4" --output "cuts.json"
@@ -27,32 +50,76 @@ motionguru review "cuts.json"
 motionguru render "input.mp4" --decisions "cuts.json" --output "edited.mp4"
 ```
 
-- `analyze` detects silence using FFmpeg `silencedetect` and writes suggested cut ranges with **pending** decisions.
-- `review` interactively asks for `cut` or `keep` for each range and records decisions.
-- `render` **refuses to run** if any proposal remains pending; renders approved cuts by concatenating the remaining timeline portions. Original source is not overwritten.
-- Analyzed silences are **proposals**, not proof that content is unwanted. The creator decides.
-- The prototype re-encodes H.264 and AAC. It is intended for short videos; very long projects and sophisticated audio mixing are future work.
+All proposals default to `pending`. Render **refuses to export** while an unreviewed proposal exists. Silence is not necessarily unwanted content.
 
-### Run tests
+### 2. Create motion graphics from scratch
 
 ```powershell
-python -m pytest
+motionguru motion "examples/intro.json" --output "intro.mp4"
+motionguru motion "examples/intro.json" --output "unused.mp4" --preview "preview.png"
 ```
 
-## Roadmap
+Use the editable JSON scene schema to control text, shapes, charts, colors, time, easing and composition. Default example is a 7.5-second 720×1280 vertical reel.
 
-| Version | Goal | Status |
-| --- | --- | --- |
-| 0.1 | FFmpeg metadata, silence proposals, manual approval, MP4 output | Initial implementation on feature branch |
-| 0.2 | Caption transcription, timing correction, styled subtitles | Planned |
-| 0.3 | Kinetic typography and motion-graphics scene renderer | Planned |
-| 0.4 | SFX, voice/music mixing, advanced video effects | Planned |
-| 0.5 | AI assistant tool interface and preview studio | Planned |
+### 3. Professional-style captions
 
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md), [ROADMAP.md](ROADMAP.md), and [the Claude Code skill](.claude/skills/motionguru/SKILL.md).
+```powershell
+motionguru captions style "examples/captions.srt" --style editorial --output "captions.ass"
+motionguru captions burn "input.mp4" --captions "captions.ass" --output "captioned.mp4"
+```
 
-## Attribution and licenses
+Styles: `clean`, `editorial`, `pop`, `cinematic`, `neon`, `minimal`, `bold`, `lower-third`. These are original, simple ASS typography presets—not proprietary commercial Envato templates. Burning requires an FFmpeg build with the ASS/libass filter.
 
-This initial implementation is written independently. The uploaded `claude-reel-effects` project is an architectural reference; **its Python code, models, fonts, logos, and sound effects are not bundled here**. Any future import must be audited for applicable licenses, preserving copyright notices, and asset usage rights. The new source in this repository is MIT-licensed; see [LICENSE](LICENSE).
+For optional offline speech-to-text:
 
-Created by **Chaituverse**.
+```powershell
+python -m pip install -e ".[transcribe]"
+motionguru captions transcribe "voiceover.mp3" --language te --output "words.srt"
+```
+
+On the first transcription, faster-whisper may download a model. Word timestamps are approximate and must be checked by a human, especially for Telugu-English code switching.
+
+### 4. Create original sound effects and mix audio
+
+```powershell
+motionguru sfx whoosh --duration 0.7 --output "whoosh.wav"
+motionguru mix "intro.mp4" --sfx "whoosh.wav" --output "intro-sound.mp4"
+motionguru mix "video.mp4" --music "licensed-music.mp3" --music-volume 0.15 --output "mix.mp4"
+```
+
+Only use music that you have a license to use. Audio mixing is basic volume balancing; advanced beat sync, ducking and mastering are planned.
+
+### 5. Local scene studio
+
+```powershell
+motionguru studio
+```
+
+Open **http://127.0.0.1:8765** to preview or edit JSON scenes. The web editor is local and does not upload media. Export scene JSON and render final MP4 with the CLI. Its preview is not guaranteed to be pixel-identical to the Python renderer.
+
+### 6. Claude Code & other agents
+
+The skill is in `.claude/skills/motionguru/SKILL.md`. It explains how to plan scene JSON, review cuts and render/export safely.
+
+Optional MCP tools:
+
+```powershell
+python -m pip install -e ".[agents]"
+motionguru-mcp
+```
+
+Configure your compatible assistant to launch `motionguru-mcp` as a local stdio server. Do not expose it to untrusted remote users; it accesses local files on behalf of the user.
+
+## Run tests
+
+```powershell
+python -m pytest -q
+```
+
+See [Quick Start](docs/QUICKSTART.md), [Architecture](docs/ARCHITECTURE.md), [Roadmap](ROADMAP.md) and [Testing](docs/TESTING.md).
+
+## Licensing and original effects
+
+The MotionGuru code is MIT licensed. No third-party commercial templates, premium SFX, model weights, logo packs or fonts have been copied into the repository. The original Claude Reel Effects repository informed our architecture; future code reuse must carry correct third-party notices and asset licenses.
+
+Copyright (c) 2026 Chaituverse.
