@@ -1,0 +1,40 @@
+{
+  "width": 720,
+  "height": 1280,
+  "fps": 30,
+  "background": "#080E19",
+  "scenes": [
+    {
+      "duration": 2.5,
+      "background": "#080E19",
+      "scene_fade": 0.25,
+      "layers": [
+        {"type": "rect", "x": 0.08, "y": 0.18, "width": 0.13, "height": 0.006, "color": "#5CE1E6", "entrance": "slide-left"},
+        {"type": "text", "text": "CREATE.", "x": 0.5, "y": 0.42, "size": 93, "color": "#FFFFFF", "entrance": "fade-up"},
+        {"type": "text", "text": "ANIMATE.", "x": 0.5, "y": 0.52, "size": 83, "color": "#5CE1E6", "start": 0.4, "entrance": "zoom"},
+        {"type": "text", "text": "EDIT.", "x": 0.5, "y": 0.62, "size": 100, "color": "#FFFFFF", "start": 0.8, "entrance": "slide-left"}
+      ]
+    },
+    {
+      "duration": 2.5,
+      "background": "#121025",
+      "scene_fade": 0.3,
+      "layers": [
+        {"type": "chart", "x": 0.14, "y": 0.35, "width": 0.72, "height": 0.24, "values": [13, 18, 15, 26, 35, 28, 41, 60, 54, 81], "color": "#5CE1E6", "start": 0.1, "thickness": 6},
+        {"type": "text", "text": "YOUR IDEAS.", "x": 0.5, "y": 0.69, "size": 74, "color": "#FFFFFF", "start": 0.5},
+        {"type": "text", "text": "IN MOTION.", "x": 0.5, "y": 0.76, "size": 68, "color": "#5CE1E6", "start": 0.8}
+      ]
+    },
+    {
+      "duration": 2.5,
+      "background": "#080E19",
+      "scene_fade": 0.2,
+      "layers": [
+        {"type": "circle", "x": 0.5, "y": 0.37, "radius": 0.12, "color": "#5CE1E6", "start": 0.1, "entrance": "zoom"},
+        {"type": "text", "text": "MOTIONGURU AI", "x": 0.5, "y": 0.57, "size": 62, "color": "#FFFFFF", "entrance": "zoom"},
+        {"type": "text", "text": "BY CHAITUVERSE", "x": 0.5, "y": 0.64, "size": 30, "color": "#5CE1E6", "start": 0.3},
+        {"type": "text", "text": "CREATE. ANIMATE. EDIT.", "x": 0.5, "y": 0.81, "size": 24, "color": "#D4DBE5", "start": 0.8}
+      ]
+    }
+  ]
+}
